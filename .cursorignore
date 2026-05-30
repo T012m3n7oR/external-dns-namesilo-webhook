@@ -1,0 +1,22 @@
+# Build artifacts
+**/bin/**
+**/obj/**
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+TestResults/
+coverage/
+
+# IDE
+.vs/
+.idea/
+.vscode/
+
+# Secrets
+.env
+.env.*
+secrets/
+*.pem
+*.key
