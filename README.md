@@ -74,4 +74,4 @@ Set `Namesilo:ApiKey` in user secrets or environment for local testing against N
 
 ## License
 
-Apache-2.0
+Apache License 2.0 — see [LICENSE](LICENSE).
