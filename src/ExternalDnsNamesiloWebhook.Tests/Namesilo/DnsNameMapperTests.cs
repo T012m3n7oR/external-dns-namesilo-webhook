@@ -23,7 +23,7 @@ public class DnsNameMapperTests
 
         string host = DnsNameMapper.ToRecordHost(domain, domain);
 
-        Assert.Equal(NamesiloDnsConstants.ApexRecordHost, host);
+        Assert.Equal(NamesiloDns.ApexRecordHost, host);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class DnsNameMapperTests
     {
         string domain = TestData.CreateDomain(_fixture);
 
-        string dnsName = DnsNameMapper.ToDnsName(domain, NamesiloDnsConstants.ApexRecordHost);
+        string dnsName = DnsNameMapper.ToDnsName(domain, NamesiloDns.ApexRecordHost);
 
         Assert.Equal(domain, dnsName);
     }
@@ -136,7 +136,7 @@ public class DnsNameMapperTests
 
         string host = DnsNameMapper.NormalizeRecordHost(domain, domain);
 
-        Assert.Equal(NamesiloDnsConstants.ApexRecordHost, host);
+        Assert.Equal(NamesiloDns.ApexRecordHost, host);
     }
 
     [Fact]

@@ -33,7 +33,7 @@ public class NamesiloDnsServiceTests
     [Fact]
     public void AdjustEndpoints_AppliesDefaultTtl()
     {
-        int defaultTtl = _fixture.Create<int>() + 1;
+        int defaultTtl = TestData.CreateNameSiloRecordTtl(_fixture);
         string domain = TestData.CreateDomain(_fixture);
         NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().WithDefaultTtl(defaultTtl).Build());
         DnsEndpoint input = TestData.CreateARecord(_fixture, domain, recordTtl: 0);
@@ -44,10 +44,38 @@ public class NamesiloDnsServiceTests
     }
 
     [Fact]
+    public void AdjustEndpoints_NormalizesTtlBelowNameSiloRange()
+    {
+        int invalidTtl = TestData.CreateBelowNameSiloRecordTtl(_fixture);
+        string domain = TestData.CreateDomain(_fixture);
+        NamesiloDnsService sut = CreateSut(
+            NamesiloOptionsBuilder.New().WithDefaultTtl(TestData.CreateBelowNameSiloRecordTtl(_fixture)).Build());
+        DnsEndpoint input = TestData.CreateARecord(_fixture, domain, recordTtl: invalidTtl);
+
+        IReadOnlyList<DnsEndpoint> adjusted = sut.AdjustEndpoints([input]);
+
+        Assert.Equal(NamesiloRecordTtl.Normalize(invalidTtl), adjusted[0].RecordTtl);
+    }
+
+    [Fact]
+    public void AdjustEndpoints_NormalizesTtlAboveNameSiloRange()
+    {
+        int invalidTtl = TestData.CreateAboveNameSiloRecordTtl(_fixture);
+        string domain = TestData.CreateDomain(_fixture);
+        NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().Build());
+        DnsEndpoint input = TestData.CreateARecord(_fixture, domain, recordTtl: invalidTtl);
+
+        IReadOnlyList<DnsEndpoint> adjusted = sut.AdjustEndpoints([input]);
+
+        Assert.Equal(NamesiloRecordTtl.Normalize(invalidTtl), adjusted[0].RecordTtl);
+    }
+
+    [Fact]
     public async Task ApplyChangesAsync_CreatesRecord()
     {
         string domain = TestData.CreateDomain(_fixture);
-        DnsEndpoint endpoint = TestData.CreateARecord(_fixture, domain, recordTtl: _fixture.Create<int>() + 1);
+        int recordTtl = TestData.CreateNameSiloRecordTtl(_fixture);
+        DnsEndpoint endpoint = TestData.CreateARecord(_fixture, domain, recordTtl: recordTtl);
         string recordId = _fixture.Create<Guid>().ToString("N");
 
         _apiClientMock
@@ -55,9 +83,9 @@ public class NamesiloDnsServiceTests
                 It.Is<AddRecordRequest>(request =>
                     request.Domain == domain
                     && request.RecordType == endpoint.RecordType
-                    && request.RecordHost == NamesiloDnsConstants.ApexRecordHost
+                    && request.RecordHost == NamesiloDns.ApexRecordHost
                     && request.RecordValue == endpoint.Targets[0]
-                    && request.Ttl == (int)endpoint.RecordTtl),
+                    && request.Ttl == recordTtl),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(recordId)
             .Verifiable();
@@ -164,13 +192,13 @@ public class NamesiloDnsServiceTests
                 It.Is<UpdateRecordRequest>(request =>
                     request.Domain == domain
                     && request.RecordId == existing.RecordId
-                    && request.RecordHost == NamesiloDnsConstants.ApexRecordHost
+                    && request.RecordHost == NamesiloDns.ApexRecordHost
                     && request.RecordValue == newTarget),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask)
             .Verifiable();
 
-        int defaultTtl = _fixture.Create<int>() + 1;
+        int defaultTtl = TestData.CreateNameSiloRecordTtl(_fixture);
         NamesiloDnsService sut = CreateSut(
             NamesiloOptionsBuilder.New().WithDomainFilter(domain).WithDefaultTtl(defaultTtl).Build());
 
@@ -188,7 +216,8 @@ public class NamesiloDnsServiceTests
     public async Task ApplyChangesAsync_CreatesSubdomainRecord()
     {
         string domain = TestData.CreateDomain(_fixture);
-        DnsEndpoint endpoint = TestData.CreateSubdomainARecord(_fixture, domain, recordTtl: _fixture.Create<int>() + 1);
+        int recordTtl = TestData.CreateNameSiloRecordTtl(_fixture);
+        DnsEndpoint endpoint = TestData.CreateSubdomainARecord(_fixture, domain, recordTtl: recordTtl);
         string label = DnsNameMapper.ToRecordHost(domain, endpoint.DnsName);
 
         _apiClientMock
@@ -198,7 +227,7 @@ public class NamesiloDnsServiceTests
                     && request.RecordType == endpoint.RecordType
                     && request.RecordHost == label
                     && request.RecordValue == endpoint.Targets[0]
-                    && request.Ttl == (int)endpoint.RecordTtl),
+                    && request.Ttl == recordTtl),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_fixture.Create<Guid>().ToString("N"))
             .Verifiable();
@@ -359,8 +388,8 @@ public class NamesiloDnsServiceTests
     [Fact]
     public void AdjustEndpoints_PreservesPositiveTtl()
     {
-        int defaultTtl = _fixture.Create<int>() + 1;
-        int explicitTtl = defaultTtl + _fixture.Create<int>() + 1;
+        int defaultTtl = TestData.CreateNameSiloRecordTtl(_fixture);
+        int explicitTtl = TestData.CreateNameSiloRecordTtl(_fixture);
         string domain = TestData.CreateDomain(_fixture);
         NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().WithDefaultTtl(defaultTtl).Build());
         DnsEndpoint input = TestData.CreateARecord(_fixture, domain, recordTtl: explicitTtl);
@@ -368,6 +397,29 @@ public class NamesiloDnsServiceTests
         IReadOnlyList<DnsEndpoint> adjusted = sut.AdjustEndpoints([input]);
 
         Assert.Equal(explicitTtl, adjusted[0].RecordTtl);
+    }
+
+    [Fact]
+    public async Task ApplyChangesAsync_NormalizesLowTtlOnCreate()
+    {
+        string domain = TestData.CreateDomain(_fixture);
+        int invalidTtl = TestData.CreateBelowNameSiloRecordTtl(_fixture);
+        int expectedTtl = NamesiloRecordTtl.Normalize(invalidTtl);
+        DnsEndpoint endpoint = TestData.CreateARecord(_fixture, domain, recordTtl: invalidTtl);
+        string recordId = _fixture.Create<Guid>().ToString("N");
+
+        _apiClientMock
+            .Setup(client => client.AddRecordAsync(
+                It.Is<AddRecordRequest>(request => request.Ttl == expectedTtl),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(recordId)
+            .Verifiable();
+
+        NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().WithDomainFilter(domain).Build());
+
+        await sut.ApplyChangesAsync(DnsChangesBuilder.CreateOnly(endpoint), CancellationToken.None);
+
+        _apiClientMock.Verify();
     }
 
     private NamesiloDnsService CreateSut(

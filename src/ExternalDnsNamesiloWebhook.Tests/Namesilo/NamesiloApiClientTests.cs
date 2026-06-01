@@ -85,7 +85,7 @@ public class NamesiloApiClientTests
                 {
                     Domain = domain,
                     RecordType = DnsRecordType.A,
-                    RecordHost = NamesiloDnsConstants.ApexRecordHost,
+                    RecordHost = NamesiloDns.ApexRecordHost,
                     RecordValue = _fixture.Create<string>(),
                     Ttl = _fixture.Create<int>() + 1,
                 },
@@ -100,7 +100,7 @@ public class NamesiloApiClientTests
         string domain = TestData.CreateDomain(_fixture);
         MockHttpMessageHandler mockHttp = new();
         mockHttp.Expect(HttpMethod.Get, $"*{NamesiloApiOperations.ListRecords}*")
-            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDnsConstants.SuccessReplyCode));
+            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDns.SuccessReplyCode));
         NamesiloApiClient sut = CreateSut(mockHttp);
 
         IReadOnlyList<NamesiloDnsRecord> records = await sut.ListRecordsAsync(
@@ -155,7 +155,7 @@ public class NamesiloApiClientTests
         MockHttpMessageHandler mockHttp = new();
         mockHttp.Expect(HttpMethod.Get, $"*{NamesiloApiOperations.AddRecord}*")
             .WithQueryString("rrtype", "A")
-            .WithQueryString("rrhost", NamesiloDnsConstants.ApexRecordHost)
+            .WithQueryString("rrhost", NamesiloDns.ApexRecordHost)
             .WithQueryString("rrvalue", target)
             .WithQueryString("rrttl", ttl.ToString())
             .Respond(
@@ -169,7 +169,7 @@ public class NamesiloApiClientTests
             {
                 Domain = domain,
                 RecordType = DnsRecordType.A,
-                RecordHost = NamesiloDnsConstants.ApexRecordHost,
+                RecordHost = NamesiloDns.ApexRecordHost,
                 RecordValue = target,
                 Ttl = ttl,
             },
@@ -191,13 +191,13 @@ public class NamesiloApiClientTests
             {
                 Domain = domain,
                 RecordType = DnsRecordType.A,
-                RecordHost = NamesiloDnsConstants.ApexRecordHost,
+                RecordHost = NamesiloDns.ApexRecordHost,
                 RecordValue = _fixture.Create<string>(),
                 Ttl = _fixture.Create<int>() + 1,
             },
             CancellationToken.None);
 
-        Assert.Equal(NamesiloDnsConstants.DryRunRecordId, recordId);
+        Assert.Equal(NamesiloDns.DryRunRecordId, recordId);
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
@@ -211,7 +211,7 @@ public class NamesiloApiClientTests
         MockHttpMessageHandler mockHttp = new();
         mockHttp.Expect(HttpMethod.Get, $"*{NamesiloApiOperations.UpdateRecord}*")
             .WithQueryString("rrid", recordId)
-            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDnsConstants.SuccessReplyCode));
+            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDns.SuccessReplyCode));
         NamesiloApiClient sut = CreateSut(mockHttp);
 
         await sut.UpdateRecordAsync(
@@ -219,7 +219,7 @@ public class NamesiloApiClientTests
             {
                 Domain = domain,
                 RecordId = recordId,
-                RecordHost = NamesiloDnsConstants.ApexRecordHost,
+                RecordHost = NamesiloDns.ApexRecordHost,
                 RecordValue = target,
                 Ttl = ttl,
             },
@@ -240,7 +240,7 @@ public class NamesiloApiClientTests
             {
                 Domain = domain,
                 RecordId = _fixture.Create<Guid>().ToString("N"),
-                RecordHost = NamesiloDnsConstants.ApexRecordHost,
+                RecordHost = NamesiloDns.ApexRecordHost,
                 RecordValue = _fixture.Create<string>(),
                 Ttl = _fixture.Create<int>() + 1,
             },
@@ -257,7 +257,7 @@ public class NamesiloApiClientTests
         MockHttpMessageHandler mockHttp = new();
         mockHttp.Expect(HttpMethod.Get, $"*{NamesiloApiOperations.DeleteRecord}*")
             .WithQueryString("rrid", recordId)
-            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDnsConstants.SuccessReplyCode));
+            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(NamesiloDns.SuccessReplyCode));
         NamesiloApiClient sut = CreateSut(mockHttp);
 
         await sut.DeleteRecordAsync(

@@ -1,5 +1,5 @@
 using ExternalDnsNamesiloWebhook.Core.Configuration;
-using ExternalDnsNamesiloWebhook.Core.Constants;
+using ExternalDnsNamesiloWebhook.Core.Namesilo;
 using System;
 using System.Security.Cryptography;
 
@@ -9,7 +9,7 @@ internal sealed class NamesiloOptionsBuilder
 {
     private string _apiKey = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
     private string[] _domainFilter = [];
-    private int _defaultTtl = NamesiloDnsConstants.DefaultRecordTtl;
+    private int _defaultTtl = NamesiloRecordTtl.DefaultSeconds;
     private bool _dryRun;
 
     public static NamesiloOptionsBuilder New()

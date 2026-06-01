@@ -69,7 +69,7 @@ The split between **Core** (DNS service logic, testable without HTTP) and **Web*
 | `namesilo-api-key` | file at `SECRETS_PATH` | — | Flat key-per-file override (matches cert-manager secret key name) |
 | `SECRETS_PATH` | env | `/run/secrets` | Directory for Kubernetes secret volume mounts |
 | `Namesilo:DomainFilter` | appsettings | `["example.com"]` | Zones this service serves |
-| `Namesilo:DefaultTtl` | appsettings | `300` | TTL when ExternalDNS sends `0` |
+| `Namesilo:DefaultTtl` | appsettings | `3600` | TTL when ExternalDNS sends `0` (clamped to NameSilo 3600–2592000) |
 | `Namesilo:DryRun` | appsettings | `false` | Log mutations without calling NameSilo |
 | `Namesilo:ApiBaseUrl` | appsettings | `https://www.namesilo.com/api` | API base URL |
 

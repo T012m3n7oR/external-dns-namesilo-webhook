@@ -45,7 +45,7 @@ public static class DnsNameMapper
 
         if (normalizedDnsName == normalizedDomain)
         {
-            return NamesiloDnsConstants.ApexRecordHost;
+            return NamesiloDns.ApexRecordHost;
         }
 
         string suffix = "." + normalizedDomain;
@@ -63,7 +63,7 @@ public static class DnsNameMapper
         string normalizedHost = host.Trim().TrimEnd('.').ToLowerInvariant();
 
         if (string.IsNullOrEmpty(normalizedHost)
-            || normalizedHost == NamesiloDnsConstants.ApexRecordHost
+            || normalizedHost == NamesiloDns.ApexRecordHost
             || normalizedHost == normalizedDomain)
         {
             return normalizedDomain;
@@ -84,7 +84,7 @@ public static class DnsNameMapper
 
         if (normalizedHost == normalizedDomain)
         {
-            return NamesiloDnsConstants.ApexRecordHost;
+            return NamesiloDns.ApexRecordHost;
         }
 
         if (normalizedHost.EndsWith('.' + normalizedDomain, StringComparison.Ordinal))
