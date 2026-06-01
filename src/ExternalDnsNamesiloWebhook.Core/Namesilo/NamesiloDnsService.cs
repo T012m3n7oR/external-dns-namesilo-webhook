@@ -67,21 +67,64 @@ public sealed class NamesiloDnsService : INamesiloDnsService
             }
         }
 
-        _logger.LogDebug(
-            "Returning {EndpointCount} DNS endpoints from {DomainCount} configured domains",
-            endpoints.Count,
-            _options.Value.DomainFilter.Length);
+        string[] domainFilters = _options.Value.DomainFilter;
+        DnsEndpointLogging.LogSyncSummary(
+            _logger,
+            "NameSilo zone state returned to ExternalDNS",
+            endpoints,
+            domainFilters);
+        DnsEndpointLogging.LogEndpointSet(
+            _logger,
+            LogLevel.Debug,
+            "NameSilo zone state (full)",
+            endpoints);
 
         return endpoints;
     }
 
     public async Task ApplyChangesAsync(DnsChanges changes, CancellationToken cancellationToken)
     {
+        int createCount = changes.Create.Count;
+        int updateCount = changes.UpdateNew.Count;
+        int deleteCount = changes.Delete.Count;
+
+        if (createCount == 0 && updateCount == 0 && deleteCount == 0)
+        {
+            _logger.LogDebug("ApplyChanges: empty change set (no NameSilo API mutations)");
+            return;
+        }
+
         _logger.LogInformation(
             "Applying changes create={Create} update={Update} delete={Delete}",
-            changes.Create.Count,
-            changes.UpdateNew.Count,
-            changes.Delete.Count);
+            createCount,
+            updateCount,
+            deleteCount);
+
+        DnsEndpointLogging.LogEndpointSet(
+            _logger,
+            LogLevel.Debug,
+            "ApplyChanges create",
+            changes.Create);
+        DnsEndpointLogging.LogEndpointSet(
+            _logger,
+            LogLevel.Debug,
+            "ApplyChanges delete",
+            changes.Delete);
+
+        for (int index = 0; index < updateCount; index++)
+        {
+            DnsEndpoint updateNew = changes.UpdateNew[index];
+            DnsEndpoint updateOld = index < changes.UpdateOld.Count
+                ? changes.UpdateOld[index]
+                : updateNew;
+
+            _logger.LogInformation(
+                "ApplyChanges update: {RecordType} {DnsName} {OldTarget} -> {NewTarget}",
+                updateNew.RecordType,
+                updateNew.DnsName,
+                FormatTarget(updateOld),
+                FormatTarget(updateNew));
+        }
 
         foreach (DnsEndpoint endpoint in changes.Create)
         {
@@ -108,6 +151,18 @@ public sealed class NamesiloDnsService : INamesiloDnsService
 
     public IReadOnlyList<DnsEndpoint> AdjustEndpoints(IReadOnlyList<DnsEndpoint> endpoints)
     {
+        string[] domainFilters = _options.Value.DomainFilter;
+        DnsEndpointLogging.LogSyncSummary(
+            _logger,
+            "ExternalDNS desired endpoints (from cluster)",
+            endpoints,
+            domainFilters);
+        DnsEndpointLogging.LogEndpointSet(
+            _logger,
+            LogLevel.Debug,
+            "ExternalDNS desired endpoints (from cluster, full)",
+            endpoints);
+
         NamesiloOptions options = _options.Value;
         List<DnsEndpoint> adjusted = [];
 
@@ -127,7 +182,25 @@ public sealed class NamesiloDnsService : INamesiloDnsService
             adjusted.Add(copy);
         }
 
+        DnsEndpointLogging.LogEndpointSet(
+            _logger,
+            LogLevel.Debug,
+            "ExternalDNS desired endpoints (after TTL adjust)",
+            adjusted);
+
         return adjusted;
+    }
+
+    private static string FormatTarget(DnsEndpoint endpoint)
+    {
+        if (endpoint.Targets.Count == 0)
+        {
+            return "(no targets)";
+        }
+
+        return DnsLogRedaction.FormatRecordTarget(
+            endpoint.RecordType,
+            DnsNameMapper.PrimaryTarget(endpoint.Targets));
     }
 
     private async Task CreateRecordAsync(DnsEndpoint endpoint, CancellationToken cancellationToken)
