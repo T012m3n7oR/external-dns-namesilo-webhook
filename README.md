@@ -77,6 +77,22 @@ Secrets use ASP.NET Core [key-per-file configuration](https://learn.microsoft.co
 
 Logging goes to **stdout** (container logs). Default level is **Information** for application code; **Debug** in Development. TXT record targets are redacted in logs; the API key and request URLs are never logged.
 
+On each ExternalDNS sync interval, **Information** logs include:
+
+- Request boundaries (`ExternalDNS list records`, `adjust endpoints`, elapsed ms).
+- Sync summaries with counts plus **notable** records (apex/subdomain **A**/**AAAA**, and **TXT** names containing `external-dns`).
+- Mutations only: `Applying changes …`, per-update lines, and create/update/delete against NameSilo.
+
+Full zone dumps and TTL-adjust output are **Debug**. If ExternalDNS logs “already up to date”, you may see list/adjust summaries but no apply lines.
+
+For full per-record lists and NameSilo HTTP detail:
+
+```yaml
+env:
+  - name: Logging__LogLevel__ExternalDnsNamesiloWebhook.Core.Namesilo
+    value: Debug
+```
+
 ### Kubernetes sidecar example
 
 ```yaml
@@ -175,4 +191,4 @@ CI runs build, format verification, and tests on every push and pull request. Te
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache-2.0

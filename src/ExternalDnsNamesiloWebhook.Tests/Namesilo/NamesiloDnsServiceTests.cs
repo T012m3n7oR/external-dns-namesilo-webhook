@@ -310,12 +310,10 @@ public class NamesiloDnsServiceTests
 
         loggerMock.Verify(
             logger => logger.Log(
-                LogLevel.Information,
+                LogLevel.Debug,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((state, _) =>
-                    state.ToString()!.Contains("create=0", StringComparison.Ordinal)
-                    && state.ToString()!.Contains("update=0", StringComparison.Ordinal)
-                    && state.ToString()!.Contains("delete=0", StringComparison.Ordinal)),
+                    state.ToString()!.Contains("empty change set", StringComparison.Ordinal)),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
