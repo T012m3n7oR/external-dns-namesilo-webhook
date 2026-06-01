@@ -1,0 +1,37 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
+WORKDIR /src
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY Directory.Build.props StyleCopAnalyzers.ruleset ./
+COPY src/ExternalDnsNamesiloWebhook.Core/ExternalDnsNamesiloWebhook.Core.csproj src/ExternalDnsNamesiloWebhook.Core/
+COPY src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj src/ExternalDnsNamesiloWebhook/
+RUN dotnet restore src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj
+
+COPY . .
+RUN dotnet publish src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble AS runtime
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 8888
+EXPOSE 8080
+
+ENV ASPNETCORE_URLS=http://+:8888;http://+:8080
+ENV SECRETS_PATH=/run/secrets
+
+COPY --from=build /app/publish .
+RUN chown -R app:app /app
+
+USER $APP_UID
+
+ENTRYPOINT ["dotnet", "ExternalDnsNamesiloWebhook.dll"]
