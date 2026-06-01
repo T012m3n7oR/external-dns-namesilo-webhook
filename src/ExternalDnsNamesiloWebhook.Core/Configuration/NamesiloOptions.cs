@@ -1,4 +1,5 @@
 using ExternalDnsNamesiloWebhook.Core.Constants;
+using ExternalDnsNamesiloWebhook.Core.Namesilo;
 
 namespace ExternalDnsNamesiloWebhook.Core.Configuration;
 
@@ -10,7 +11,7 @@ public sealed class NamesiloOptions
 
     public string[] DomainFilter { get; set; } = [];
 
-    public int DefaultTtl { get; set; } = NamesiloDnsConstants.DefaultRecordTtl;
+    public int DefaultTtl { get; set; } = NamesiloRecordTtl.DefaultSeconds;
 
     public bool DryRun { get; set; }
 

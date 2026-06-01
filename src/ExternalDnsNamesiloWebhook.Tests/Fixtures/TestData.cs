@@ -26,6 +26,23 @@ internal static class TestData
         return CreateDomainLabel(fixture) + "." + domain;
     }
 
+    public static int CreateNameSiloRecordTtl(IFixture fixture)
+    {
+        int range = NamesiloRecordTtl.MaximumSeconds - NamesiloRecordTtl.MinimumSeconds + 1;
+        return NamesiloRecordTtl.MinimumSeconds + ((fixture.Create<int>() & int.MaxValue) % range);
+    }
+
+    public static int CreateBelowNameSiloRecordTtl(IFixture fixture)
+    {
+        int belowRange = NamesiloRecordTtl.MinimumSeconds - 1;
+        return ((fixture.Create<int>() & int.MaxValue) % belowRange) + 1;
+    }
+
+    public static int CreateAboveNameSiloRecordTtl(IFixture fixture)
+    {
+        return NamesiloRecordTtl.MaximumSeconds + 1 + ((fixture.Create<int>() & int.MaxValue) % 10_000);
+    }
+
     public static DnsEndpoint CreateARecord(Fixture fixture, string domain, string? target = null, long recordTtl = 0)
     {
         return CreateDnsEndpoint(fixture, domain, DnsRecordType.A, target, recordTtl);
@@ -69,7 +86,7 @@ internal static class TestData
             .With(record => record.RecordType, recordType)
             .With(record => record.Host, host ?? domain)
             .With(record => record.Value, (IFixture f) => value ?? f.Create<string>())
-            .With(record => record.Ttl, (IFixture f) => f.Create<int>() + 1)
+            .With(record => record.Ttl, (IFixture f) => CreateNameSiloRecordTtl(f))
             .Create();
     }
 
@@ -84,7 +101,7 @@ internal static class TestData
         {
             Reply = new NamesiloApiReply
             {
-                Code = NamesiloDnsConstants.SuccessReplyCode,
+                Code = NamesiloDns.SuccessReplyCode,
                 Detail = NamesiloApiDefaults.SuccessDetail,
                 RecordId = recordId,
             },

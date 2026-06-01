@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ExternalDnsNamesiloWebhook.Core.Configuration;
+using ExternalDnsNamesiloWebhook.Core.Constants;
 using ExternalDnsNamesiloWebhook.Core.Contracts.NameSilo;
 using ExternalDnsNamesiloWebhook.Core.Enums;
 using ExternalDnsNamesiloWebhook.Core.Logging;
@@ -176,7 +177,8 @@ public sealed class NamesiloDnsService : INamesiloDnsService
                 Labels = endpoint.Labels,
                 ProviderSpecific = endpoint.ProviderSpecific,
                 Targets = endpoint.Targets.ToList(),
-                RecordTtl = endpoint.RecordTtl > 0 ? endpoint.RecordTtl : options.DefaultTtl,
+                RecordTtl = NamesiloRecordTtl.Normalize(
+                    endpoint.RecordTtl > 0 ? (int)endpoint.RecordTtl : options.DefaultTtl),
             };
 
             adjusted.Add(copy);
@@ -336,11 +338,7 @@ public sealed class NamesiloDnsService : INamesiloDnsService
 
     private int ResolveTtl(long recordTtl)
     {
-        if (recordTtl > 0)
-        {
-            return (int)recordTtl;
-        }
-
-        return _options.Value.DefaultTtl;
+        int ttl = recordTtl > 0 ? (int)recordTtl : _options.Value.DefaultTtl;
+        return NamesiloRecordTtl.Normalize(ttl);
     }
 }

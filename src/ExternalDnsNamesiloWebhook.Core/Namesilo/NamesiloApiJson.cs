@@ -53,7 +53,7 @@ public static class NamesiloApiJson
     }
 
     public static string SerializeSuccessReply(
-        int code = NamesiloDnsConstants.SuccessReplyCode,
+        int code = NamesiloDns.SuccessReplyCode,
         string detail = NamesiloApiDefaults.SuccessDetail)
     {
         return SerializeReply(code, detail);
@@ -65,7 +65,7 @@ public static class NamesiloApiJson
         {
             Reply = new NamesiloApiReply
             {
-                Code = NamesiloDnsConstants.SuccessReplyCode,
+                Code = NamesiloDns.SuccessReplyCode,
                 Detail = NamesiloApiDefaults.SuccessDetail,
                 ResourceRecords = records,
             },
@@ -79,7 +79,7 @@ public static class NamesiloApiJson
             {
                 Reply = new NamesiloSingleResourceRecordReply
                 {
-                    Code = NamesiloDnsConstants.SuccessReplyCode,
+                    Code = NamesiloDns.SuccessReplyCode,
                     Detail = NamesiloApiDefaults.SuccessDetail,
                     ResourceRecord = record,
                 },

@@ -39,7 +39,7 @@ public class NamesiloApiRequestTests
         {
             Domain = domain,
             RecordType = DnsRecordType.TXT,
-            RecordHost = NamesiloDnsConstants.ApexRecordHost,
+            RecordHost = NamesiloDns.ApexRecordHost,
             RecordValue = target,
             Ttl = ttl,
         };
@@ -48,7 +48,7 @@ public class NamesiloApiRequestTests
 
         Assert.Equal(domain, parameters["domain"]);
         Assert.Equal("TXT", parameters["rrtype"]);
-        Assert.Equal(NamesiloDnsConstants.ApexRecordHost, parameters["rrhost"]);
+        Assert.Equal(NamesiloDns.ApexRecordHost, parameters["rrhost"]);
         Assert.Equal(target, parameters["rrvalue"]);
         Assert.Equal(ttl.ToString(), parameters["rrttl"]);
     }
@@ -64,7 +64,7 @@ public class NamesiloApiRequestTests
         {
             Domain = domain,
             RecordId = recordId,
-            RecordHost = NamesiloDnsConstants.ApexRecordHost,
+            RecordHost = NamesiloDns.ApexRecordHost,
             RecordValue = target,
             Ttl = ttl,
         };
@@ -73,7 +73,7 @@ public class NamesiloApiRequestTests
 
         Assert.Equal(domain, parameters["domain"]);
         Assert.Equal(recordId, parameters["rrid"]);
-        Assert.Equal(NamesiloDnsConstants.ApexRecordHost, parameters["rrhost"]);
+        Assert.Equal(NamesiloDns.ApexRecordHost, parameters["rrhost"]);
         Assert.Equal(target, parameters["rrvalue"]);
         Assert.Equal(ttl.ToString(), parameters["rrttl"]);
     }

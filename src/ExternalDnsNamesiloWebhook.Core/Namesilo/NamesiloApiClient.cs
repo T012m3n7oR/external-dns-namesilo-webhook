@@ -128,7 +128,7 @@ public sealed class NamesiloApiClient : INamesiloApiClient
             request.Domain,
             DnsLogRedaction.FormatRecordTarget(request.RecordType, request.RecordValue),
             request.Ttl);
-        recordId = NamesiloDnsConstants.DryRunRecordId;
+        recordId = NamesiloDns.DryRunRecordId;
         return true;
     }
 
@@ -236,7 +236,7 @@ public sealed class NamesiloApiClient : INamesiloApiClient
 
         NamesiloApiResponse apiResponse = NamesiloApiJson.DeserializeResponse(body);
         int code = NamesiloApiJson.ReadReplyCode(apiResponse);
-        if (code != NamesiloDnsConstants.SuccessReplyCode)
+        if (code != NamesiloDns.SuccessReplyCode)
         {
             _logger.LogWarning(
                 "NameSilo API returned code {ReplyCode} for {Operation} domain={Domain}",
