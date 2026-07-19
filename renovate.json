@@ -4,13 +4,19 @@
     "config:best-practices",
     ":semanticCommits"
   ],
+  "ignorePresets": [
+    "group:monorepos",
+    "group:recommended"
+  ],
   "labels": ["dependencies"],
-  "automergeSchedule": ["at any time"],
+  "dependencyDashboard": true,
+  "platformAutomerge": false,
   "packageRules": [
     {
-      "description": "Auto-merge minor, patch, pin, pinDigest, and digest updates",
+      "description": "Auto-merge minor, patch, pin, pinDigest, and digest updates after CI is green",
       "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr"
     },
     {
       "description": "Major updates open as PRs but do not automerge",
