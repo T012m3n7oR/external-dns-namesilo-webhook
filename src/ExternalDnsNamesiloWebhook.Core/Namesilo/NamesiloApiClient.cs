@@ -238,13 +238,18 @@ public sealed class NamesiloApiClient : INamesiloApiClient
         int code = NamesiloApiJson.ReadReplyCode(apiResponse);
         if (code != NamesiloDns.SuccessReplyCode)
         {
+            string detail = apiResponse.Reply?.Detail?.Trim() ?? string.Empty;
             _logger.LogWarning(
-                "NameSilo API returned code {ReplyCode} for {Operation} domain={Domain}",
+                "NameSilo API returned code {ReplyCode} detail={Detail} for {Operation} domain={Domain}",
                 code,
+                string.IsNullOrEmpty(detail) ? "(none)" : detail,
                 operation,
                 domain);
             _logger.LogDebug("NameSilo API error response preview: {BodyPreview}", Truncate(body));
-            throw new NamesiloServiceException($"NameSilo API returned code {code}.");
+            throw new NamesiloServiceException(
+                string.IsNullOrEmpty(detail)
+                    ? $"NameSilo API returned code {code}."
+                    : $"NameSilo API returned code {code}: {detail}.");
         }
 
         return apiResponse;

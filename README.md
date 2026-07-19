@@ -73,6 +73,8 @@ The split between **Core** (DNS service logic, testable without HTTP) and **Web*
 | `Namesilo:DryRun` | appsettings | `false` | Log mutations without calling NameSilo |
 | `Namesilo:ApiBaseUrl` | appsettings | `https://www.namesilo.com/api` | API base URL |
 
+**Dry-run:** ExternalDNS `--dry-run` is **not** forwarded over the webhook protocol. Native providers honor that flag inside their own `ApplyChanges`; the webhook provider always `POST`s changes here. To skip NameSilo writes, set `Namesilo:DryRun` / `Namesilo__DryRun=true` on this sidecar.
+
 Secrets use ASP.NET Core [key-per-file configuration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/#key-per-file-configuration): each filename is a config key; use `__` for nesting (e.g. `Namesilo__ApiKey`).
 
 Logging goes to **stdout** (container logs). Default level is **Information** for application code; **Debug** in Development. TXT record targets are redacted in logs; the API key and request URLs are never logged.

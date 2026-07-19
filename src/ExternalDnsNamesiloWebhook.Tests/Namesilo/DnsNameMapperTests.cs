@@ -80,6 +80,29 @@ public class DnsNameMapperTests
     }
 
     [Fact]
+    public void ToDnsName_MultiLabelRelativeHost_AppendsDomain()
+    {
+        string domain = TestData.CreateDomain(_fixture);
+        string nestedHost = TestData.CreateDomainLabel(_fixture) + "." + TestData.CreateDomainLabel(_fixture);
+
+        string dnsName = DnsNameMapper.ToDnsName(domain, nestedHost);
+
+        Assert.Equal(nestedHost + "." + domain, dnsName);
+    }
+
+    [Fact]
+    public void ToDnsName_FqdnHostUnderDomain_ReturnsNormalizedFqdn()
+    {
+        string domain = TestData.CreateDomain(_fixture);
+        string nestedHost = TestData.CreateDomainLabel(_fixture) + "." + TestData.CreateDomainLabel(_fixture);
+        string fqdn = nestedHost + "." + domain;
+
+        string dnsName = DnsNameMapper.ToDnsName(domain, fqdn);
+
+        Assert.Equal(fqdn, dnsName);
+    }
+
+    [Fact]
     public void DomainFilterMatches_SubdomainOfConfiguredDomain_ReturnsTrue()
     {
         string configured = TestData.CreateDomain(_fixture);

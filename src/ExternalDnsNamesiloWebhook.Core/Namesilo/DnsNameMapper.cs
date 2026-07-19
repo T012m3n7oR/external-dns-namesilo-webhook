@@ -69,9 +69,11 @@ public static class DnsNameMapper
             return normalizedDomain;
         }
 
-        if (normalizedHost.Contains('.', StringComparison.Ordinal))
+        // NameSilo may return an FQDN (ends with the zone) or a relative host.
+        // Multi-label relatives like "registry.gitlab" contain dots but are not FQDNs.
+        if (normalizedHost.EndsWith('.' + normalizedDomain, StringComparison.Ordinal))
         {
-            return NormalizeDnsName(normalizedHost);
+            return normalizedHost;
         }
 
         return normalizedHost + "." + normalizedDomain;

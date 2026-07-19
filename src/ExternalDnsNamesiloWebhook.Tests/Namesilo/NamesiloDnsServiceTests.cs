@@ -130,6 +130,35 @@ public class NamesiloDnsServiceTests
     }
 
     [Fact]
+    public async Task GetRecordsAsync_MapsMultiLabelRelativeHostToFqdn()
+    {
+        string domain = TestData.CreateDomain(_fixture);
+        string nestedHost = TestData.CreateDomainLabel(_fixture) + "." + TestData.CreateDomainLabel(_fixture);
+        string target = domain;
+        NamesiloDnsRecord nestedCname = TestData.CreateNamesiloRecord(
+            _fixture,
+            domain,
+            DnsRecordType.CNAME,
+            host: nestedHost,
+            value: target);
+
+        _apiClientMock
+            .Setup(client => client.ListRecordsAsync(
+                It.Is<ListRecordsRequest>(request => request.Domain == domain),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([nestedCname]);
+
+        NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().WithDomainFilter(domain).Build());
+
+        IReadOnlyList<DnsEndpoint> records = await sut.GetRecordsAsync(CancellationToken.None);
+
+        Assert.Single(records);
+        Assert.Equal(nestedHost + "." + domain, records[0].DnsName);
+        Assert.Equal(DnsRecordType.CNAME, records[0].RecordType);
+        Assert.Equal([target], records[0].Targets);
+    }
+
+    [Fact]
     public async Task ApplyChangesAsync_DeletesRecord()
     {
         string domain = TestData.CreateDomain(_fixture);
@@ -307,23 +336,33 @@ public class NamesiloDnsServiceTests
     }
 
     [Fact]
-    public async Task GetRecordsAsync_ExcludesRecordsOutsideDomainFilter()
+    public async Task GetRecordsAsync_MapsFqdnHostUnderDomain()
     {
         string domain = TestData.CreateDomain(_fixture);
-        string outsideHost = TestData.CreateDomain(_fixture);
-        NamesiloDnsRecord outsideRecord = TestData.CreateNamesiloRecord(_fixture, domain, DnsRecordType.A, host: outsideHost);
+        string nestedHost = TestData.CreateDomainLabel(_fixture) + "." + TestData.CreateDomainLabel(_fixture);
+        string fqdnHost = nestedHost + "." + domain;
+        string target = domain;
+        NamesiloDnsRecord nestedCname = TestData.CreateNamesiloRecord(
+            _fixture,
+            domain,
+            DnsRecordType.CNAME,
+            host: fqdnHost,
+            value: target);
 
         _apiClientMock
             .Setup(client => client.ListRecordsAsync(
                 It.Is<ListRecordsRequest>(request => request.Domain == domain),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync([outsideRecord]);
+            .ReturnsAsync([nestedCname]);
 
         NamesiloDnsService sut = CreateSut(NamesiloOptionsBuilder.New().WithDomainFilter(domain).Build());
 
         IReadOnlyList<DnsEndpoint> records = await sut.GetRecordsAsync(CancellationToken.None);
 
-        Assert.Empty(records);
+        Assert.Single(records);
+        Assert.Equal(fqdnHost, records[0].DnsName);
+        Assert.Equal(DnsRecordType.CNAME, records[0].RecordType);
+        Assert.Equal([target], records[0].Targets);
     }
 
     [Fact]

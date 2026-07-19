@@ -74,12 +74,13 @@ public class NamesiloApiClientTests
     {
         string domain = TestData.CreateDomain(_fixture);
         int errorCode = _fixture.Create<int>() + 301;
+        string detail = "DNS modification error";
         MockHttpMessageHandler mockHttp = new();
         mockHttp.Expect(HttpMethod.Get, $"*{NamesiloApiOperations.AddRecord}*")
-            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(errorCode, "error"));
+            .Respond(HttpStatusCode.OK, HttpMediaTypes.ApplicationJson, TestData.BuildSuccessReplyJson(errorCode, detail));
         NamesiloApiClient sut = CreateSut(mockHttp);
 
-        await Assert.ThrowsAsync<NamesiloServiceException>(() =>
+        NamesiloServiceException exception = await Assert.ThrowsAsync<NamesiloServiceException>(() =>
             sut.AddRecordAsync(
                 new AddRecordRequest
                 {
@@ -91,6 +92,8 @@ public class NamesiloApiClientTests
                 },
                 CancellationToken.None));
 
+        Assert.Contains(errorCode.ToString(), exception.Message, StringComparison.Ordinal);
+        Assert.Contains(detail, exception.Message, StringComparison.Ordinal);
         mockHttp.VerifyNoOutstandingExpectation();
     }
 
