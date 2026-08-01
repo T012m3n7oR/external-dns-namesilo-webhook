@@ -19,20 +19,15 @@
       "automergeType": "pr"
     },
     {
-      "description": "Major updates open as PRs but do not automerge",
+      "description": "Major updates may automerge after CI is green",
       "matchUpdateTypes": ["major"],
-      "automerge": false
+      "automerge": true,
+      "automergeType": "pr"
     },
     {
       "description": "Group GitHub Actions updates",
       "matchManagers": ["github-actions"],
       "groupName": "github-actions",
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "NuGet packages (publish CI must pass before merge)",
-      "matchManagers": ["nuget"],
-      "groupName": "nuget",
       "minimumReleaseAge": "7 days"
     },
     {
