@@ -22,12 +22,13 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  BUILDX_BUILDER: homelab-buildkit
 
 jobs:
   build-test-publish:
     runs-on: homelab-webhook
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
@@ -53,7 +54,7 @@ jobs:
 
       - name: Log in to ghcr.io
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -75,11 +76,11 @@ jobs:
             type=raw,value=latest,enable=${{ github.event_name != 'pull_request' && (github.event_name == 'schedule' || github.ref == 'refs/heads/main') }}
 
       - name: Set up remote BuildKit
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
         with:
+          name: homelab-buildkit
           driver: remote
-          endpoint: tcp://buildkit.ci-buildkit.svc.cluster.local:1234
-          install: true
+          endpoint: tcp://127.0.0.1:1234
 
       - name: Build and push
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
