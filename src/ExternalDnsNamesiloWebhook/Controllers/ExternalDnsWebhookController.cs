@@ -83,7 +83,7 @@ public sealed class ExternalDnsWebhookController : WebhookControllerBase
     [Consumes(HttpMediaTypes.ApplicationJson, WebhookMediaTypes.Version1)]
     [ProducesResponseType(typeof(IReadOnlyList<DnsEndpoint>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult AdjustEndpoints([FromBody] List<DnsEndpoint>? endpoints)
+    public IActionResult AdjustEndpoints([FromBody] IReadOnlyList<DnsEndpoint>? endpoints)
     {
         if (endpoints is null)
         {

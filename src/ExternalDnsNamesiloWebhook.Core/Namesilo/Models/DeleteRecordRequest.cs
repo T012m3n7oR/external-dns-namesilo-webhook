@@ -10,7 +10,7 @@ public sealed class DeleteRecordRequest : INamesiloApiRequest
 
     public IReadOnlyDictionary<string, string> ToQueryParameters()
     {
-        return new Dictionary<string, string>
+        return new Dictionary<string, string>(System.StringComparer.Ordinal)
         {
             ["domain"] = Domain,
             ["rrid"] = RecordId,

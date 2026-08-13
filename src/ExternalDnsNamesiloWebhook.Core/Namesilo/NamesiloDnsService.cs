@@ -101,31 +101,7 @@ public sealed class NamesiloDnsService : INamesiloDnsService
             updateCount,
             deleteCount);
 
-        DnsEndpointLogging.LogEndpointSet(
-            _logger,
-            LogLevel.Debug,
-            "ApplyChanges create",
-            changes.Create);
-        DnsEndpointLogging.LogEndpointSet(
-            _logger,
-            LogLevel.Debug,
-            "ApplyChanges delete",
-            changes.Delete);
-
-        for (int index = 0; index < updateCount; index++)
-        {
-            DnsEndpoint updateNew = changes.UpdateNew[index];
-            DnsEndpoint updateOld = index < changes.UpdateOld.Count
-                ? changes.UpdateOld[index]
-                : updateNew;
-
-            _logger.LogInformation(
-                "ApplyChanges update: {RecordType} {DnsName} {OldTarget} -> {NewTarget}",
-                updateNew.RecordType,
-                updateNew.DnsName,
-                FormatTarget(updateOld),
-                FormatTarget(updateNew));
-        }
+        LogChanges(changes);
 
         foreach (DnsEndpoint endpoint in changes.Create)
         {
@@ -193,6 +169,22 @@ public sealed class NamesiloDnsService : INamesiloDnsService
         return adjusted;
     }
 
+    private static DnsEndpoint ToEndpoint(string domain, NamesiloDnsRecord record)
+    {
+        if (!record.RecordType.IsSupported())
+        {
+            throw new NamesiloServiceException($"Unsupported NameSilo record type '{record.RecordType}'.");
+        }
+
+        return new DnsEndpoint
+        {
+            DnsName = DnsNameMapper.ToDnsName(domain, record.Host),
+            RecordType = record.RecordType,
+            RecordTtl = record.Ttl,
+            Targets = [record.Value],
+        };
+    }
+
     private static string FormatTarget(DnsEndpoint endpoint)
     {
         if (endpoint.Targets.Count == 0)
@@ -203,6 +195,27 @@ public sealed class NamesiloDnsService : INamesiloDnsService
         return DnsLogRedaction.FormatRecordTarget(
             endpoint.RecordType,
             DnsNameMapper.PrimaryTarget(endpoint.Targets));
+    }
+
+    private void LogChanges(DnsChanges changes)
+    {
+        DnsEndpointLogging.LogEndpointSet(_logger, LogLevel.Debug, "ApplyChanges create", changes.Create);
+        DnsEndpointLogging.LogEndpointSet(_logger, LogLevel.Debug, "ApplyChanges delete", changes.Delete);
+
+        for (int index = 0; index < changes.UpdateNew.Count; index++)
+        {
+            DnsEndpoint updateNew = changes.UpdateNew[index];
+            DnsEndpoint updateOld = index < changes.UpdateOld.Count
+                ? changes.UpdateOld[index]
+                : updateNew;
+
+            _logger.LogInformation(
+                "ApplyChanges update: {RecordType} {DnsName} {OldTarget} -> {NewTarget}",
+                updateNew.RecordType,
+                updateNew.DnsName,
+                FormatTarget(updateOld),
+                FormatTarget(updateNew));
+        }
     }
 
     private async Task CreateRecordAsync(DnsEndpoint endpoint, CancellationToken cancellationToken)
@@ -307,22 +320,6 @@ public sealed class NamesiloDnsService : INamesiloDnsService
 
         throw new NamesiloServiceException(
             $"Could not find NameSilo record for {endpoint.RecordType} {endpoint.DnsName} -> {expectedValue}.");
-    }
-
-    private DnsEndpoint ToEndpoint(string domain, NamesiloDnsRecord record)
-    {
-        if (!record.RecordType.IsSupported())
-        {
-            throw new NamesiloServiceException($"Unsupported NameSilo record type '{record.RecordType}'.");
-        }
-
-        return new DnsEndpoint
-        {
-            DnsName = DnsNameMapper.ToDnsName(domain, record.Host),
-            RecordType = record.RecordType,
-            RecordTtl = record.Ttl,
-            Targets = [record.Value],
-        };
     }
 
     private string RequireDomain(string dnsName)

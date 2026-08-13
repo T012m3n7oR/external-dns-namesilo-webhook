@@ -186,7 +186,7 @@ public sealed class NamesiloApiClient : INamesiloApiClient
             throw new NamesiloServiceException("NameSilo API key is not configured.");
         }
 
-        Dictionary<string, string> queryParameters = new()
+        Dictionary<string, string> queryParameters = new(StringComparer.Ordinal)
         {
             ["version"] = NamesiloApiDefaults.ApiVersion,
             ["type"] = NamesiloApiDefaults.JsonFormat,

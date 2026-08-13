@@ -32,7 +32,6 @@ All application code lives under `src/`:
 
 ```text
 external-dns-namesilo-webhook/
-  Directory.Build.props                 # ImplicitUsings disabled solution-wide
   ExternalDnsNamesiloWebhook.sln
   src/
     ExternalDnsNamesiloWebhook/           # ASP.NET Core host (Kestrel, DI wiring)
