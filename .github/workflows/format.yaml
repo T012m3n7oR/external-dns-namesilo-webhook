@@ -5,14 +5,12 @@ on:
     branches: [main]
     paths:
       - ".editorconfig"
-      - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
       - "src/**"
       - ".github/workflows/format.yaml"
   pull_request:
     paths:
       - ".editorconfig"
-      - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
       - "src/**"
       - ".github/workflows/format.yaml"

@@ -7,7 +7,6 @@ on:
     paths:
       - "Dockerfile"
       - ".dockerignore"
-      - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
       - ".editorconfig"
       - "src/**"
@@ -16,7 +15,6 @@ on:
     paths:
       - "Dockerfile"
       - ".dockerignore"
-      - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
       - ".editorconfig"
       - "src/**"
