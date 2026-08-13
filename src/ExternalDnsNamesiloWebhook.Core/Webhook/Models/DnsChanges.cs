@@ -4,11 +4,11 @@ namespace ExternalDnsNamesiloWebhook.Core.Webhook.Models;
 
 public sealed class DnsChanges
 {
-    public List<DnsEndpoint> Create { get; set; } = [];
+    public IReadOnlyList<DnsEndpoint> Create { get; set; } = [];
 
-    public List<DnsEndpoint> UpdateOld { get; set; } = [];
+    public IReadOnlyList<DnsEndpoint> UpdateOld { get; set; } = [];
 
-    public List<DnsEndpoint> UpdateNew { get; set; } = [];
+    public IReadOnlyList<DnsEndpoint> UpdateNew { get; set; } = [];
 
-    public List<DnsEndpoint> Delete { get; set; } = [];
+    public IReadOnlyList<DnsEndpoint> Delete { get; set; } = [];
 }

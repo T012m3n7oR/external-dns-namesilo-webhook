@@ -92,7 +92,7 @@ public class NamesiloApiClientTests
                 },
                 CancellationToken.None));
 
-        Assert.Contains(errorCode.ToString(), exception.Message, StringComparison.Ordinal);
+        Assert.Contains(errorCode.ToString(System.Globalization.CultureInfo.InvariantCulture), exception.Message, StringComparison.Ordinal);
         Assert.Contains(detail, exception.Message, StringComparison.Ordinal);
         mockHttp.VerifyNoOutstandingExpectation();
     }
@@ -160,7 +160,7 @@ public class NamesiloApiClientTests
             .WithQueryString("rrtype", "A")
             .WithQueryString("rrhost", NamesiloDns.ApexRecordHost)
             .WithQueryString("rrvalue", target)
-            .WithQueryString("rrttl", ttl.ToString())
+            .WithQueryString("rrttl", ttl.ToString(System.Globalization.CultureInfo.InvariantCulture))
             .Respond(
                 HttpStatusCode.OK,
                 HttpMediaTypes.ApplicationJson,

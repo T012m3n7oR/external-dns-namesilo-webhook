@@ -8,7 +8,7 @@ public sealed class DnsEndpoint
 {
     public string DnsName { get; set; } = string.Empty;
 
-    public List<string> Targets { get; set; } = [];
+    public IReadOnlyList<string> Targets { get; set; } = [];
 
     public DnsRecordType RecordType { get; set; }
 
@@ -17,7 +17,7 @@ public sealed class DnsEndpoint
     [JsonPropertyName("recordTTL")]
     public long RecordTtl { get; set; }
 
-    public Dictionary<string, string>? Labels { get; set; }
+    public IReadOnlyDictionary<string, string>? Labels { get; set; }
 
-    public List<ProviderSpecificProperty>? ProviderSpecific { get; set; }
+    public IReadOnlyList<ProviderSpecificProperty>? ProviderSpecific { get; set; }
 }

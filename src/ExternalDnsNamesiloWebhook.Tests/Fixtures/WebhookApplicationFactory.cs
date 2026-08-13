@@ -63,7 +63,7 @@ public sealed class WebhookApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment(TestConstants.TestingEnvironment);
         builder.ConfigureAppConfiguration((_, configuration) =>
         {
-            configuration.AddInMemoryCollection(new Dictionary<string, string?>
+            configuration.AddInMemoryCollection(new Dictionary<string, string?>(System.StringComparer.Ordinal)
             {
                 ["Namesilo:ApiKey"] = "integration-test-api-key",
             });

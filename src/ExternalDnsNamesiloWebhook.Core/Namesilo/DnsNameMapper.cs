@@ -25,7 +25,7 @@ public static class DnsNameMapper
         foreach (string domain in domains)
         {
             string normalizedDomain = NormalizeDnsName(domain);
-            if (normalizedDnsName == normalizedDomain ||
+            if (string.Equals(normalizedDnsName, normalizedDomain, StringComparison.Ordinal) ||
                 normalizedDnsName.EndsWith('.' + normalizedDomain, StringComparison.Ordinal))
             {
                 if (bestMatch == null || normalizedDomain.Length > bestMatch.Length)
@@ -43,7 +43,7 @@ public static class DnsNameMapper
         string normalizedDomain = NormalizeDnsName(domain);
         string normalizedDnsName = NormalizeDnsName(dnsName);
 
-        if (normalizedDnsName == normalizedDomain)
+        if (string.Equals(normalizedDnsName, normalizedDomain, StringComparison.Ordinal))
         {
             return NamesiloDns.ApexRecordHost;
         }
@@ -63,8 +63,8 @@ public static class DnsNameMapper
         string normalizedHost = host.Trim().TrimEnd('.').ToLowerInvariant();
 
         if (string.IsNullOrEmpty(normalizedHost)
-            || normalizedHost == NamesiloDns.ApexRecordHost
-            || normalizedHost == normalizedDomain)
+            || string.Equals(normalizedHost, NamesiloDns.ApexRecordHost, StringComparison.Ordinal)
+            || string.Equals(normalizedHost, normalizedDomain, StringComparison.Ordinal))
         {
             return normalizedDomain;
         }
@@ -84,7 +84,7 @@ public static class DnsNameMapper
         string normalizedHost = host.Trim().TrimEnd('.').ToLowerInvariant();
         string normalizedDomain = NormalizeDnsName(domain);
 
-        if (normalizedHost == normalizedDomain)
+        if (string.Equals(normalizedHost, normalizedDomain, StringComparison.Ordinal))
         {
             return NamesiloDns.ApexRecordHost;
         }

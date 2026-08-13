@@ -43,7 +43,7 @@ public sealed class WebhookEndpointTests : IClassFixture<WebhookApplicationFacto
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         AssertWebhookContentType(response);
         string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        Assert.Contains(_factory.DomainFilter, body);
+        Assert.Contains(_factory.DomainFilter, body, System.StringComparison.Ordinal);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public sealed class WebhookEndpointTests : IClassFixture<WebhookApplicationFacto
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         AssertWebhookContentType(response);
         string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        Assert.Contains(_factory.SampleEndpoint.DnsName, body);
+        Assert.Contains(_factory.SampleEndpoint.DnsName, body, System.StringComparison.Ordinal);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public sealed class WebhookEndpointTests : IClassFixture<WebhookApplicationFacto
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         AssertWebhookContentType(response);
         string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        Assert.Contains($"\"recordTTL\":{adjusted.RecordTtl}", body);
+        Assert.Contains($"\"recordTTL\":{adjusted.RecordTtl}", body, System.StringComparison.Ordinal);
     }
 
     [Fact]
@@ -174,6 +174,6 @@ public sealed class WebhookEndpointTests : IClassFixture<WebhookApplicationFacto
         System.Net.Http.Headers.MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
         Assert.NotNull(contentType);
         Assert.Equal(WebhookMediaTypes.WebhookJson, contentType.MediaType);
-        Assert.Equal(WebhookMediaTypes.Version1Parameter, contentType.Parameters.Single(parameter => parameter.Name == "version").Value);
+        Assert.Equal(WebhookMediaTypes.Version1Parameter, contentType.Parameters.Single(parameter => string.Equals(parameter.Name, "version", System.StringComparison.Ordinal)).Value);
     }
 }

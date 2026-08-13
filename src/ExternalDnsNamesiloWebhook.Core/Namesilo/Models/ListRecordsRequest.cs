@@ -8,6 +8,6 @@ public sealed class ListRecordsRequest : INamesiloApiRequest
 
     public IReadOnlyDictionary<string, string> ToQueryParameters()
     {
-        return new Dictionary<string, string> { ["domain"] = Domain };
+        return new Dictionary<string, string>(System.StringComparer.Ordinal) { ["domain"] = Domain };
     }
 }

@@ -48,7 +48,7 @@ public static class DnsEndpointLogging
 
         List<DnsEndpoint> notable = endpoints
             .Where(endpoint => IsNotableForSync(endpoint, domainFilters))
-            .OrderBy(static endpoint => endpoint.DnsName)
+            .OrderBy(static endpoint => endpoint.DnsName, StringComparer.Ordinal)
             .ThenBy(static endpoint => endpoint.RecordType)
             .ToList();
 
@@ -60,7 +60,7 @@ public static class DnsEndpointLogging
                 endpoint.RecordType,
                 endpoint.DnsName,
                 FormatTarget(endpoint),
-                endpoint.RecordTtl > 0 ? endpoint.RecordTtl.ToString() : "default");
+                endpoint.RecordTtl > 0 ? endpoint.RecordTtl.ToString(System.Globalization.CultureInfo.InvariantCulture) : "default");
         }
 
         int omitted = endpoints.Count - notable.Count;
@@ -86,7 +86,7 @@ public static class DnsEndpointLogging
 
         logger.Log(level, "{Label}: {EndpointCount} DNS endpoint(s)", label, endpoints.Count);
 
-        foreach (DnsEndpoint endpoint in endpoints.OrderBy(static e => e.DnsName).ThenBy(static e => e.RecordType))
+        foreach (DnsEndpoint endpoint in endpoints.OrderBy(static e => e.DnsName, StringComparer.Ordinal).ThenBy(static e => e.RecordType))
         {
             logger.Log(
                 level,
@@ -95,7 +95,7 @@ public static class DnsEndpointLogging
                 endpoint.RecordType,
                 endpoint.DnsName,
                 FormatTarget(endpoint),
-                endpoint.RecordTtl > 0 ? endpoint.RecordTtl.ToString() : "default");
+                endpoint.RecordTtl > 0 ? endpoint.RecordTtl.ToString(System.Globalization.CultureInfo.InvariantCulture) : "default");
         }
     }
 

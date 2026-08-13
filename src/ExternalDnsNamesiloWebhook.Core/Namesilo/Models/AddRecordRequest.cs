@@ -18,7 +18,7 @@ public sealed class AddRecordRequest : INamesiloApiRequest
 
     public IReadOnlyDictionary<string, string> ToQueryParameters()
     {
-        return new Dictionary<string, string>
+        return new Dictionary<string, string>(System.StringComparer.Ordinal)
         {
             ["domain"] = Domain,
             ["rrtype"] = RecordType.ToString(),

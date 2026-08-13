@@ -24,7 +24,7 @@ public class NamesiloOptionsPostConfigureTests
     public void PostConfigure_LoadsApiKeyFromConfigurationWhenOptionsEmpty()
     {
         string apiKey = _fixture.Create<string>();
-        IConfiguration configuration = CreateConfiguration(new Dictionary<string, string?> { ["namesilo-api-key"] = apiKey });
+        IConfiguration configuration = CreateConfiguration(new Dictionary<string, string?>(StringComparer.Ordinal) { ["namesilo-api-key"] = apiKey });
         NamesiloOptions options = new();
         NamesiloOptionsPostConfigure sut = CreateSut(configuration);
 
@@ -38,7 +38,7 @@ public class NamesiloOptionsPostConfigureTests
     {
         string configuredKey = _fixture.Create<string>();
         string secretKey = _fixture.Create<string>();
-        IConfiguration configuration = CreateConfiguration(new Dictionary<string, string?> { ["namesilo-api-key"] = secretKey });
+        IConfiguration configuration = CreateConfiguration(new Dictionary<string, string?>(StringComparer.Ordinal) { ["namesilo-api-key"] = secretKey });
         NamesiloOptions options = new() { ApiKey = configuredKey };
         NamesiloOptionsPostConfigure sut = CreateSut(configuration);
 

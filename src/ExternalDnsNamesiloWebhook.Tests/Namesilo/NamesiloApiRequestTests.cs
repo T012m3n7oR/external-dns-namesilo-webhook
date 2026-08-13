@@ -50,7 +50,7 @@ public class NamesiloApiRequestTests
         Assert.Equal("TXT", parameters["rrtype"]);
         Assert.Equal(NamesiloDns.ApexRecordHost, parameters["rrhost"]);
         Assert.Equal(target, parameters["rrvalue"]);
-        Assert.Equal(ttl.ToString(), parameters["rrttl"]);
+        Assert.Equal(ttl.ToString(System.Globalization.CultureInfo.InvariantCulture), parameters["rrttl"]);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class NamesiloApiRequestTests
         Assert.Equal(recordId, parameters["rrid"]);
         Assert.Equal(NamesiloDns.ApexRecordHost, parameters["rrhost"]);
         Assert.Equal(target, parameters["rrvalue"]);
-        Assert.Equal(ttl.ToString(), parameters["rrttl"]);
+        Assert.Equal(ttl.ToString(System.Globalization.CultureInfo.InvariantCulture), parameters["rrttl"]);
     }
 
     [Fact]
