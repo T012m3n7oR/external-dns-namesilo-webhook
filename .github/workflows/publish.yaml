@@ -9,7 +9,7 @@ on:
       - ".dockerignore"
       - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
-      - "StyleCopAnalyzers.ruleset"
+      - ".editorconfig"
       - "src/**"
       - ".github/workflows/publish.yaml"
   pull_request:
@@ -18,7 +18,7 @@ on:
       - ".dockerignore"
       - "Directory.Build.props"
       - "ExternalDnsNamesiloWebhook.sln"
-      - "StyleCopAnalyzers.ruleset"
+      - ".editorconfig"
       - "src/**"
       - ".github/workflows/publish.yaml"
   schedule:
