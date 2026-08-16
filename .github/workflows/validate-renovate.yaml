@@ -6,7 +6,9 @@ on:
       - renovate.json
       - .github/workflows/validate-renovate.yaml
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'renovate/**'
     paths:
       - renovate.json
       - .github/workflows/validate-renovate.yaml
