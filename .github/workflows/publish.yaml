@@ -14,13 +14,6 @@ on:
       - "src/**"
       - ".github/workflows/publish.yaml"
   pull_request:
-    paths:
-      - "Dockerfile"
-      - ".dockerignore"
-      - "ExternalDnsNamesiloWebhook.sln"
-      - ".editorconfig"
-      - "src/**"
-      - ".github/workflows/publish.yaml"
   schedule:
     # Weekly rebuild with refreshed base images and vulnerability scan (Monday 06:00 UTC).
     - cron: "0 6 * * 1"

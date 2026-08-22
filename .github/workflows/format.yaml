@@ -11,11 +11,6 @@ on:
       - "src/**"
       - ".github/workflows/format.yaml"
   pull_request:
-    paths:
-      - ".editorconfig"
-      - "ExternalDnsNamesiloWebhook.sln"
-      - "src/**"
-      - ".github/workflows/format.yaml"
 
 permissions:
   contents: read
