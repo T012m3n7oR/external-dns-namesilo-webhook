@@ -68,7 +68,7 @@ jobs:
         run: dotnet build ExternalDnsNamesiloWebhook.sln --no-restore -c Release
 
       - name: Test
-        run: dotnet test ExternalDnsNamesiloWebhook.sln --no-build -c Release --verbosity normal
+        run: dotnet test --project src/ExternalDnsNamesiloWebhook.Tests/ExternalDnsNamesiloWebhook.Tests.csproj --no-build -c Release --verbosity normal
 
       - name: Log in to ghcr.io
         if: github.event_name != 'pull_request'
