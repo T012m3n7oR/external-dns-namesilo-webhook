@@ -24,7 +24,6 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
   BUILDX_BUILDER: homelab-buildkit
 
 concurrency:
@@ -50,6 +49,18 @@ jobs:
       - name: Check vulnerable NuGet packages
         run: dotnet list ExternalDnsNamesiloWebhook.sln package --vulnerable --include-transitive
 
+      - name: Normalize image name
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          image_name="${GITHUB_REPOSITORY,,}"
+          if [[ "$image_name" =~ [^a-z0-9./_-] ]]; then
+            echo "Image name contains characters that are invalid in an OCI reference: $image_name" >&2
+            exit 1
+          fi
+          echo "name=$image_name" >> "$GITHUB_OUTPUT"
+
       - name: Format
         run: dotnet format ExternalDnsNamesiloWebhook.sln --verify-no-changes
 
@@ -71,7 +82,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
           labels: |
             org.opencontainers.image.title=external-dns-namesilo-webhook
             org.opencontainers.image.description=ExternalDNS webhook provider for NameSilo DNS
@@ -103,7 +114,7 @@ jobs:
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           version: v0.73.0
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          image-ref: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:${{ steps.meta.outputs.version }}
           ignore-unfixed: true
           severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
           format: json
