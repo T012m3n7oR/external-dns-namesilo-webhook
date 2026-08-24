@@ -1,0 +1,25 @@
+name: Set up homelab remote Buildx
+description: Create a Buildx builder connected to the ARC runner's BuildKit endpoint
+
+inputs:
+  name:
+    description: Local name for the Buildx builder
+    required: false
+    default: homelab-buildkit
+
+runs:
+  using: composite
+  steps:
+    - name: Create remote builder
+      shell: bash
+      env:
+        BUILDER_NAME: ${{ inputs.name }}
+      run: |
+        set -euo pipefail
+        : "${BUILDKIT_HOST:?BUILDKIT_HOST is required on ARC runners}"
+        docker buildx create \
+          --name "$BUILDER_NAME" \
+          --driver remote \
+          --use \
+          "$BUILDKIT_HOST"
+        docker buildx inspect --bootstrap
