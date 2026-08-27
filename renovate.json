@@ -1,47 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices",
-    ":semanticCommits"
-  ],
-  "ignorePresets": [
-    "group:monorepos",
-    "group:recommended"
-  ],
-  "labels": ["dependencies"],
-  "dependencyDashboard": true,
-  "platformAutomerge": false,
   "packageRules": [
-    {
-      "description": "Auto-merge minor, patch, pin, pinDigest, and digest updates after CI is green",
-      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest", "digest"],
-      "automerge": true,
-      "automergeType": "pr"
-    },
-    {
-      "description": "Major updates may automerge after CI is green",
-      "matchUpdateTypes": ["major"],
-      "automerge": true,
-      "automergeType": "pr"
-    },
     {
       "description": "Group GitHub Actions updates",
       "matchManagers": ["github-actions"],
-      "groupName": "github-actions",
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": ".NET container base images in Dockerfile",
-      "matchManagers": ["dockerfile"],
-      "matchPackageNames": [
-        "mcr.microsoft.com/dotnet/sdk",
-        "mcr.microsoft.com/dotnet/aspnet"
-      ],
-      "groupName": "dotnet-docker",
-      "minimumReleaseAge": "7 days"
+      "groupName": "github-actions"
     }
-  ],
-  "vulnerabilityAlerts": {
-    "enabled": true
-  }
+  ]
 }
