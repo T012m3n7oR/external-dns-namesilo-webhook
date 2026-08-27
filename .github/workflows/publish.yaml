@@ -100,33 +100,35 @@ jobs:
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/main') }}
           pull: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=${{ github.workspace }}/external-dns-namesilo-webhook.tar
 
-      - name: Scan published image with Trivy
-        if: github.event_name != 'pull_request'
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      - name: Set up Trivy
+        uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
         with:
           version: v0.73.0
-          image-ref: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:${{ steps.meta.outputs.version }}
-          ignore-unfixed: true
-          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
-          format: json
-          output: trivy-results.json
-          exit-code: '0'
 
-      - name: Report all Trivy findings and enforce severity gate
-        if: github.event_name != 'pull_request'
+      - name: Scan image with Trivy
         shell: bash
         run: |
           set -euo pipefail
-          trivy convert \
+          trivy image \
+            --input "${{ github.workspace }}/external-dns-namesilo-webhook.tar" \
+            --ignore-unfixed \
             --scanners vuln \
-            --format table \
             --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
-            trivy-results.json
+            --format json \
+            --output trivy-results.json
+
+      - name: Report all Trivy findings and enforce severity gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          trivy convert --scanners vuln --format table \
+            --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL trivy-results.json
           trivy convert \
             --scanners vuln \
             --format table \
