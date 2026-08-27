@@ -201,6 +201,7 @@ dotnet_diagnostic.SA1027.severity = warning
 dotnet_diagnostic.SA1028.severity = warning
 dotnet_diagnostic.SA0002.severity = warning
 charset = utf-8
+end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
@@ -503,4 +504,3 @@ csharp_preserve_single_line_blocks = true
 dotnet_sort_system_directives_first = false
 # Don't separate import directive groups with blank lines (since we're sorting alphabetically)
 dotnet_separate_import_directive_groups = false
-

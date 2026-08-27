@@ -1,0 +1,37 @@
+# Keep text files normalized in the repository and checked out with LF.
+* text=auto eol=lf
+
+# EditorConfig text families.
+*.cs text eol=lf
+*.csproj text eol=lf
+*.vbproj text eol=lf
+*.vcxproj text eol=lf
+*.vcxproj.filters text eol=lf
+*.props text eol=lf
+*.targets text eol=lf
+*.ruleset text eol=lf
+*.config text eol=lf
+*.nuspec text eol=lf
+*.resx text eol=lf
+*.vsixmanifest text eol=lf
+*.vsct text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+
+# Common non-text files.
+*.dll binary
+*.exe binary
+*.pdb binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
