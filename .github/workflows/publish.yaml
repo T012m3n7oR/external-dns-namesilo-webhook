@@ -105,6 +105,8 @@ jobs:
           no-cache: ${{ github.event_name == 'schedule' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=external-dns-namesilo-webhook
+          cache-to: type=gha,mode=max,scope=external-dns-namesilo-webhook
           outputs: type=docker,dest=${{ github.workspace }}/external-dns-namesilo-webhook.tar
 
       - name: Set up Trivy
