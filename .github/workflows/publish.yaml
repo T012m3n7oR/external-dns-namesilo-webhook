@@ -102,6 +102,7 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/main') }}
           pull: true
+          no-cache: ${{ github.event_name == 'schedule' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=docker,dest=${{ github.workspace }}/external-dns-namesilo-webhook.tar
