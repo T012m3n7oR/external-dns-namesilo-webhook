@@ -146,6 +146,13 @@ jobs:
             --exit-code 1 \
             trivy-results.json
 
+      - name: Remove Trivy OCI layout
+        if: github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/main')
+        env:
+          OCI_LAYOUT: ${{ github.workspace }}/external-dns-namesilo-webhook-oci
+        shell: bash
+        run: rm -rf -- "${OCI_LAYOUT}"
+
       - name: Install regctl
         if: github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/main')
         uses: regclient/actions/regctl-installer@f9ceff9bbbc63cd1008e60cec2b27627eedc7322 # v0.11.5
