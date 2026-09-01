@@ -164,13 +164,13 @@ jobs:
         if: github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/main')
         env:
           OCI_ARCHIVE: ${{ github.workspace }}/external-dns-namesilo-webhook.tar
-          OCI_LAYOUT: ${{ github.workspace }}/external-dns-namesilo-webhook-oci
+          REGCTL_LAYOUT: ${{ github.workspace }}/external-dns-namesilo-webhook-regctl-oci
           SOURCE_TAG: ${{ steps.meta.outputs.version }}
           RELEASE_TAGS: ${{ steps.meta.outputs.tags }}
         shell: bash
         run: |
           set -euo pipefail
-          source_ref="ocidir://${OCI_LAYOUT}:${SOURCE_TAG}"
+          source_ref="ocidir://${REGCTL_LAYOUT}:${SOURCE_TAG}"
           regctl image import "${source_ref}" "${OCI_ARCHIVE}"
           while IFS= read -r tag; do
             [[ -z "${tag}" ]] && continue
