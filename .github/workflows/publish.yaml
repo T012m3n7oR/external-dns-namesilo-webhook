@@ -17,6 +17,13 @@ on:
   schedule:
     # Weekly rebuild with refreshed base images and vulnerability scan (Monday 06:00 UTC).
     - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      no_cache:
+        description: Force a full rebuild (ignore Buildx/GHA cache)
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -94,7 +101,7 @@ jobs:
           context: .
           push: false
           pull: true
-          no-cache: ${{ github.event_name == 'schedule' }}
+          no-cache: ${{ inputs.no_cache || github.event_name == 'schedule' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           sbom: true
