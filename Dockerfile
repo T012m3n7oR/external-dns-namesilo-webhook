@@ -22,6 +22,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble@sha256:222759b391a1aaf241166672c
 WORKDIR /app
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG SECURITY_REBUILD
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update \
