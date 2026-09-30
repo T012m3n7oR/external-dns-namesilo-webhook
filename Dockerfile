@@ -15,6 +15,7 @@ RUN dotnet publish src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csp
     -c Release \
     -o /app/publish \
     /p:UseAppHost=false \
+    --no-restore \
     /p:RunAnalyzers=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble@sha256:2d584d8147faddb0d678c5748d47953e5b8e18621ed4fb7049a91381d9d7746f AS runtime
