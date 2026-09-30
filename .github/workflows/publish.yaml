@@ -98,8 +98,6 @@ jobs:
           no-cache: ${{ github.event_name == 'schedule' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            SECURITY_REBUILD=${{ github.run_id }}
           sbom: true
           cache-from: type=gha,scope=external-dns-namesilo-webhook
           cache-to: type=gha,mode=max,scope=external-dns-namesilo-webhook
