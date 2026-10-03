@@ -181,7 +181,7 @@ dotnet run --project src/ExternalDnsNamesiloWebhook
 | Secrets config | `Tests/Configuration/` | `SECRETS_PATH` / key-per-file loading |
 | Log redaction | `Tests/Logging/DnsLogRedactionTests` | TXT target redaction |
 
-CI runs build, format verification, and tests on every push and pull request. Tests use **xUnit.net v3**, [AutoFixture](https://github.com/AutoFixture/AutoFixture), explicit `using` directives (no global usings), and shared fixtures in `Tests/Fixtures/` (`TestData`, `NamesiloOptionsBuilder`, `DnsChangesBuilder`). A **weekly scheduled workflow** rebuilds the container with `--pull`, applies OS package upgrades in the Dockerfile, and fails on vulnerable NuGet packages.
+CI runs build, format verification, and tests on every push and pull request. Tests use **xUnit.net v3**, [AutoFixture](https://github.com/AutoFixture/AutoFixture), explicit `using` directives (no global usings), and shared fixtures in `Tests/Fixtures/` (`TestData`, `NamesiloOptionsBuilder`, `DnsChangesBuilder`). A **weekly scheduled workflow** rebuilds the container with `--pull` and `no-cache`, applies OS package upgrades in the Dockerfile, and fails on vulnerable NuGet packages. To force the same uncached rebuild manually, use **Actions → Publish → Run workflow** and enable **Force a full rebuild** (`no_cache`).
 
 ## References
 
