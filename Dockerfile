@@ -8,14 +8,17 @@ RUN apt-get update \
 COPY .editorconfig ./
 COPY src/ExternalDnsNamesiloWebhook.Core/ExternalDnsNamesiloWebhook.Core.csproj src/ExternalDnsNamesiloWebhook.Core/
 COPY src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj src/ExternalDnsNamesiloWebhook/
-RUN dotnet restore src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj
+RUN --mount=type=cache,target=/root/.nuget/packages,sharing=locked \
+    dotnet restore src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj \
+    /p:NuGetAudit=false
 
 COPY . .
-RUN dotnet publish src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj \
+RUN --mount=type=cache,target=/root/.nuget/packages,sharing=locked \
+    dotnet publish src/ExternalDnsNamesiloWebhook/ExternalDnsNamesiloWebhook.csproj \
     -c Release \
     -o /app/publish \
     /p:UseAppHost=false \
-    --no-restore \
+    /p:NuGetAudit=false \
     /p:RunAnalyzers=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble@sha256:2d584d8147faddb0d678c5748d47953e5b8e18621ed4fb7049a91381d9d7746f AS runtime
