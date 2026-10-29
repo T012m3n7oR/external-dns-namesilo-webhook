@@ -1,11 +1,11 @@
-name: Set up homelab remote Buildx
+name: Set up remote Buildx
 description: Create a Buildx builder connected to the ARC runner's BuildKit endpoint
 
 inputs:
   name:
     description: Local name for the Buildx builder
     required: false
-    default: homelab-buildkit
+    default: buildkit
 
 runs:
   using: composite
