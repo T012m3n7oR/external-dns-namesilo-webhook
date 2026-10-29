@@ -31,7 +31,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  BUILDX_BUILDER: homelab-buildkit
+  BUILDX_BUILDER: buildkit
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -39,7 +39,7 @@ concurrency:
 
 jobs:
   build-test-publish:
-    runs-on: homelab-webhook
+    runs-on: webhook
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
