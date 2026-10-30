@@ -62,7 +62,8 @@ public class NamesiloOptionsPostConfigureTests
             logger => logger.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((state, _) => state.ToString() == "NameSilo API key is not configured."),
+                It.Is<It.IsAnyType>((state, _) =>
+                    state != null && state.ToString() == "NameSilo API key is not configured."),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
