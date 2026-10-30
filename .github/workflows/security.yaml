@@ -18,7 +18,7 @@ concurrency:
 jobs:
   gitleaks:
     name: Gitleaks
-    runs-on: homelab-webhook
+    runs-on: external-dns-namesilo-webhook
     timeout-minutes: 60
     steps:
       - name: Check out repository
