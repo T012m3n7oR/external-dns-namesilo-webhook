@@ -14,6 +14,7 @@ on:
       - "src/**"
       - ".github/workflows/publish.yaml"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
   schedule:
     # Weekly rebuild with refreshed base images and vulnerability scan (Monday 06:00 UTC).
     - cron: "0 6 * * 1"
@@ -39,6 +40,10 @@ concurrency:
 
 jobs:
   build-test-publish:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.action != 'labeled' ||
+      contains(github.event.pull_request.labels.*.name, 'ci/no-cache')
     runs-on: external-dns-namesilo-webhook
     timeout-minutes: 60
     steps:
@@ -96,18 +101,54 @@ jobs:
       - name: Set up remote BuildKit
         uses: ./.github/actions/setup-remote-buildx
 
+      - name: Configure BuildKit cache
+        id: build-cache
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.head_ref || github.ref_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          branch_scope="external-dns-namesilo-webhook-branch-${REF_NAME}"
+          if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            pr_scope="external-dns-namesilo-webhook-pr-${PR_NUMBER}"
+            {
+              echo 'from<<CACHE_FROM'
+              printf 'type=gha,scope=%s\n' "${branch_scope}"
+              printf 'type=gha,scope=%s\n' "${pr_scope}"
+              printf 'type=gha,scope=external-dns-namesilo-webhook-main\n'
+              echo 'CACHE_FROM'
+              echo 'to<<CACHE_TO'
+              printf 'type=gha,mode=max,scope=%s\n' "${branch_scope}"
+              printf 'type=gha,mode=max,scope=%s\n' "${pr_scope}"
+              echo 'CACHE_TO'
+            } >> "${GITHUB_OUTPUT}"
+          elif [[ "${REF_NAME}" == "main" ]]; then
+            {
+              echo 'from='
+              echo 'to=type=gha,mode=max,scope=external-dns-namesilo-webhook-main'
+            } >> "${GITHUB_OUTPUT}"
+          else
+            {
+              printf 'from=type=gha,scope=%s\n' "${branch_scope}"
+              printf 'to=type=gha,mode=max,scope=%s\n' "${branch_scope}"
+            } >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Build image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           push: false
           pull: true
-          no-cache: ${{ inputs.no_cache || github.event_name == 'schedule' }}
+          no-cache: ${{ inputs.no_cache || github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'ci/no-cache')) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           sbom: true
-          cache-from: type=gha,scope=external-dns-namesilo-webhook
-          cache-to: type=gha,mode=max,scope=external-dns-namesilo-webhook
+          cache-from: ${{ steps.build-cache.outputs.from }}
+          cache-to: ${{ steps.build-cache.outputs.to }}
           outputs: type=oci,dest=${{ github.workspace }}/external-dns-namesilo-webhook.tar
 
       - name: Unpack OCI image for Trivy
