@@ -102,7 +102,7 @@ jobs:
           context: .
           push: false
           pull: true
-          no-cache: ${{ inputs.no_cache || github.event_name == 'schedule' }}
+          no-cache: ${{ inputs.no_cache || github.event_name == 'schedule' || github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           sbom: true
